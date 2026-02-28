@@ -1,0 +1,70 @@
+#include "resource.h"
+#include <windows.h>
+#include <commctrl.h>
+
+// --------------------------------------------------------------------
+//  Icon (extracted from original PriusLauncher.exe)
+// --------------------------------------------------------------------
+IDI_LAUNCHER ICON "assets\\launcher.ico"
+
+// --------------------------------------------------------------------
+//  Bitmap resources (embedded into the executable)
+//  Default theme: 20100513_TW
+// --------------------------------------------------------------------
+IDB_MAIN_BG              BITMAP  "assets\\themes\\20100513_TW\\main_bg.bmp"
+
+// Close button (no disabled state)
+IDB_BTN_CLOSE_NORMAL     BITMAP  "assets\\themes\\20100513_TW\\btn_close_normal.bmp"
+IDB_BTN_CLOSE_HOVER      BITMAP  "assets\\themes\\20100513_TW\\btn_close_hover.bmp"
+IDB_BTN_CLOSE_PRESSED    BITMAP  "assets\\themes\\20100513_TW\\btn_close_pressed.bmp"
+
+// Options button
+IDB_BTN_OPTIONS_NORMAL   BITMAP  "assets\\themes\\20100513_TW\\btn_options_normal.bmp"
+IDB_BTN_OPTIONS_HOVER    BITMAP  "assets\\themes\\20100513_TW\\btn_options_hover.bmp"
+IDB_BTN_OPTIONS_PRESSED  BITMAP  "assets\\themes\\20100513_TW\\btn_options_pressed.bmp"
+IDB_BTN_OPTIONS_DISABLED BITMAP  "assets\\themes\\20100513_TW\\btn_options_disabled.bmp"
+
+// Start button
+IDB_BTN_START_NORMAL     BITMAP  "assets\\themes\\20100513_TW\\btn_start_normal.bmp"
+IDB_BTN_START_HOVER      BITMAP  "assets\\themes\\20100513_TW\\btn_start_hover.bmp"
+IDB_BTN_START_PRESSED    BITMAP  "assets\\themes\\20100513_TW\\btn_start_pressed.bmp"
+IDB_BTN_START_DISABLED   BITMAP  "assets\\themes\\20100513_TW\\btn_start_disabled.bmp"
+
+// Progress bar (default theme)
+IDB_SEP_FILL_TOTAL       BITMAP  "assets\\themes\\20100513_TW\\sep_fill_total.bmp"
+IDB_SEP_TRACK_DISABLED   BITMAP  "assets\\themes\\20100513_TW\\sep_track_disabled.bmp"
+IDB_SEP_TRACK_HOVER      BITMAP  "assets\\themes\\20100513_TW\\sep_track_hover.bmp"
+IDB_SEP_FILL_CURRENT     BITMAP  "assets\\themes\\20100513_TW\\sep_fill_current.bmp"
+
+// --------------------------------------------------------------------
+//  Main launcher dialog  (IDD_MAIN = 101)
+//  Actual pixel size (825x510) is forced in WM_INITDIALOG.
+//  Controls are repositioned to exact pixel coords in code.
+// --------------------------------------------------------------------
+IDD_MAIN DIALOGEX 0, 0, 305, 214
+STYLE DS_SETFONT | WS_POPUP | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL  "", IDC_BTN_OPTIONS, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP,  80, 187, 70, 19
+    CONTROL  "", IDC_BTN_START,   "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 155, 187, 70, 19
+    CONTROL  "", IDC_BTN_EXIT,    "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 230, 187, 70, 19
+END
+
+// --------------------------------------------------------------------
+//  Options dialog  (IDD_OPTIONS = 102)
+// --------------------------------------------------------------------
+IDD_OPTIONS DIALOGEX 0, 0, 300, 300
+STYLE 0x80CF0848
+CAPTION "Game Options"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL       "", IDC_TREE_OPTIONS, "SysTreeView32",
+                  TVS_HASBUTTONS | TVS_LINESATROOT | TVS_SHOWSELALWAYS | TVS_FULLROWSELECT | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP | WS_CLIPSIBLINGS,
+                  4, 4, 292, 218
+    CONTROL       "", -1, "STATIC", SS_SUNKEN | WS_CHILD | WS_VISIBLE, 4, 226, 292, 34
+    LTEXT         "", IDC_LBL_PROPNAME, 8, 230, 284, 10
+    PUSHBUTTON    "Default Settings", IDC_BTN_DEFAULTS, 4, 264, 292, 14
+    DEFPUSHBUTTON "Confirm (&O)",     IDOK,             4, 282, 144, 14
+    PUSHBUTTON    "Cancel (&C)",      IDCANCEL,         152, 282, 144, 14
+END
+

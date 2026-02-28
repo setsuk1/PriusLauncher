@@ -1,0 +1,98 @@
+{
+    "version": "2.0.0",
+    "windows": {
+        "options": {
+            "shell": {
+                "executable": "powershell.exe",
+                "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
+            }
+        }
+    },
+    "tasks": [
+        {
+            "label": "Build Release",
+            "type": "shell",
+            "command": "$pf86 = [Environment]::GetEnvironmentVariable('ProgramFiles(x86)'); if (-not $pf86) { $pf86 = [Environment]::GetEnvironmentVariable('ProgramFiles') }; $vswhere = Join-Path $pf86 'Microsoft Visual Studio\\Installer\\vswhere.exe'; if (-not (Test-Path $vswhere)) { throw \"vswhere.exe not found at $vswhere\" }; $msbuild = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -find 'MSBuild\\**\\Bin\\MSBuild.exe' | Select-Object -First 1; if (-not $msbuild) { throw 'MSBuild.exe not found. Install Visual Studio Build Tools with MSBuild.' }; & $msbuild '${workspaceFolder}\\src\\PriusLauncher.vcxproj' /p:Configuration=Release /p:Platform=Win32 /nologo /v:minimal",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            },
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": ["absolute"],
+                "pattern": {
+                    "regexp": "^(.*)\\((\\d+)\\)\\s*:\\s*(error|warning)\\s+(\\w+):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "code": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "label": "Build Debug",
+            "type": "shell",
+            "command": "$pf86 = [Environment]::GetEnvironmentVariable('ProgramFiles(x86)'); if (-not $pf86) { $pf86 = [Environment]::GetEnvironmentVariable('ProgramFiles') }; $vswhere = Join-Path $pf86 'Microsoft Visual Studio\\Installer\\vswhere.exe'; if (-not (Test-Path $vswhere)) { throw \"vswhere.exe not found at $vswhere\" }; $msbuild = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -find 'MSBuild\\**\\Bin\\MSBuild.exe' | Select-Object -First 1; if (-not $msbuild) { throw 'MSBuild.exe not found. Install Visual Studio Build Tools with MSBuild.' }; & $msbuild '${workspaceFolder}\\src\\PriusLauncher.vcxproj' /p:Configuration=Debug /p:Platform=Win32 /nologo /v:minimal",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            },
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": ["absolute"],
+                "pattern": {
+                    "regexp": "^(.*)\\((\\d+)\\)\\s*:\\s*(error|warning)\\s+(\\w+):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "code": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "label": "Run Release",
+            "type": "shell",
+            "command": "Start-Process '${workspaceFolder}\\src\\bin\\Release\\PriusLauncher.exe'",
+            "group": "test",
+            "dependsOn": "Build Release",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Debug",
+            "type": "shell",
+            "command": "Start-Process '${workspaceFolder}\\src\\bin\\Debug\\PriusLauncher.exe'",
+            "group": "test",
+            "dependsOn": "Build Debug",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "$pf86 = [Environment]::GetEnvironmentVariable('ProgramFiles(x86)'); if (-not $pf86) { $pf86 = [Environment]::GetEnvironmentVariable('ProgramFiles') }; $vswhere = Join-Path $pf86 'Microsoft Visual Studio\\Installer\\vswhere.exe'; if (-not (Test-Path $vswhere)) { throw \"vswhere.exe not found at $vswhere\" }; $msbuild = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -find 'MSBuild\\**\\Bin\\MSBuild.exe' | Select-Object -First 1; if (-not $msbuild) { throw 'MSBuild.exe not found. Install Visual Studio Build Tools with MSBuild.' }; & $msbuild '${workspaceFolder}\\src\\PriusLauncher.vcxproj' /t:Clean /p:Configuration=Release /p:Platform=Win32 /nologo",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

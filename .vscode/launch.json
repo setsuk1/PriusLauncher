@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (MSVC)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\src\\bin\\Debug\\PriusLauncher.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}\\src\\bin\\Debug",
+            "environment": [],
+            "visualizerFile": "",
+            "preLaunchTask": "Build Debug"
+        },
+        {
+            "name": "Run Release (no debug)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\src\\bin\\Release\\PriusLauncher.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}\\src\\bin\\Release",
+            "environment": [],
+            "noDebug": true,
+            "preLaunchTask": "Build Release"
+        }
+    ]
+}
