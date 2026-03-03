@@ -121,6 +121,81 @@ static const wchar_t* kThemeNames[] = { L"20100513_TW", L"20101110_TW", L"201004
 static const int      kThemeCount   = (int)(sizeof(kThemeNames) / sizeof(kThemeNames[0]));
 static MainState g_main;
 
+enum ThemeBitmapSlot
+{
+    TB_MAIN_BG = 0,
+    TB_CLOSE_NORMAL,
+    TB_CLOSE_HOVER,
+    TB_CLOSE_PRESSED,
+    TB_OPTIONS_NORMAL,
+    TB_OPTIONS_HOVER,
+    TB_OPTIONS_PRESSED,
+    TB_OPTIONS_DISABLED,
+    TB_START_NORMAL,
+    TB_START_HOVER,
+    TB_START_PRESSED,
+    TB_START_DISABLED,
+    TB_SEP_FILL_TOTAL,
+    TB_SEP_TRACK_DISABLED,
+    TB_SEP_TRACK_HOVER,
+    TB_SEP_FILL_CURRENT,
+};
+
+static const int kThemeBitmapFallback[kThemeCount][16] = {
+    {
+        IDB_MAIN_BG,
+        IDB_BTN_CLOSE_NORMAL, IDB_BTN_CLOSE_HOVER, IDB_BTN_CLOSE_PRESSED,
+        IDB_BTN_OPTIONS_NORMAL, IDB_BTN_OPTIONS_HOVER, IDB_BTN_OPTIONS_PRESSED, IDB_BTN_OPTIONS_DISABLED,
+        IDB_BTN_START_NORMAL, IDB_BTN_START_HOVER, IDB_BTN_START_PRESSED, IDB_BTN_START_DISABLED,
+        IDB_SEP_FILL_TOTAL, IDB_SEP_TRACK_DISABLED, IDB_SEP_TRACK_HOVER, IDB_SEP_FILL_CURRENT
+    },
+    {
+        IDB_MAIN_BG_20101110,
+        IDB_BTN_CLOSE_NORMAL_20101110, IDB_BTN_CLOSE_HOVER_20101110, IDB_BTN_CLOSE_PRESSED_20101110,
+        IDB_BTN_OPTIONS_NORMAL_20101110, IDB_BTN_OPTIONS_HOVER_20101110, IDB_BTN_OPTIONS_PRESSED_20101110, IDB_BTN_OPTIONS_DISABLED_20101110,
+        IDB_BTN_START_NORMAL_20101110, IDB_BTN_START_HOVER_20101110, IDB_BTN_START_PRESSED_20101110, IDB_BTN_START_DISABLED_20101110,
+        IDB_SEP_FILL_TOTAL_20101110, IDB_SEP_TRACK_DISABLED_20101110, IDB_SEP_TRACK_HOVER_20101110, IDB_SEP_FILL_CURRENT_20101110
+    },
+    {
+        IDB_MAIN_BG_20100420,
+        IDB_BTN_CLOSE_NORMAL_20100420, IDB_BTN_CLOSE_HOVER_20100420, IDB_BTN_CLOSE_PRESSED_20100420,
+        IDB_BTN_OPTIONS_NORMAL_20100420, IDB_BTN_OPTIONS_HOVER_20100420, IDB_BTN_OPTIONS_PRESSED_20100420, IDB_BTN_OPTIONS_DISABLED_20100420,
+        IDB_BTN_START_NORMAL_20100420, IDB_BTN_START_HOVER_20100420, IDB_BTN_START_PRESSED_20100420, IDB_BTN_START_DISABLED_20100420,
+        IDB_SEP_FILL_TOTAL_20100420, IDB_SEP_TRACK_DISABLED_20100420, IDB_SEP_TRACK_HOVER_20100420, IDB_SEP_FILL_CURRENT_20100420
+    },
+};
+
+static int ThemeBitmapSlotFromFile(const wchar_t* filename)
+{
+    if (!filename) return -1;
+    if (wcscmp(filename, L"main_bg.bmp") == 0) return TB_MAIN_BG;
+    if (wcscmp(filename, L"btn_close_normal.bmp") == 0) return TB_CLOSE_NORMAL;
+    if (wcscmp(filename, L"btn_close_hover.bmp") == 0) return TB_CLOSE_HOVER;
+    if (wcscmp(filename, L"btn_close_pressed.bmp") == 0) return TB_CLOSE_PRESSED;
+    if (wcscmp(filename, L"btn_options_normal.bmp") == 0) return TB_OPTIONS_NORMAL;
+    if (wcscmp(filename, L"btn_options_hover.bmp") == 0) return TB_OPTIONS_HOVER;
+    if (wcscmp(filename, L"btn_options_pressed.bmp") == 0) return TB_OPTIONS_PRESSED;
+    if (wcscmp(filename, L"btn_options_disabled.bmp") == 0) return TB_OPTIONS_DISABLED;
+    if (wcscmp(filename, L"btn_start_normal.bmp") == 0) return TB_START_NORMAL;
+    if (wcscmp(filename, L"btn_start_hover.bmp") == 0) return TB_START_HOVER;
+    if (wcscmp(filename, L"btn_start_pressed.bmp") == 0) return TB_START_PRESSED;
+    if (wcscmp(filename, L"btn_start_disabled.bmp") == 0) return TB_START_DISABLED;
+    if (wcscmp(filename, L"sep_fill_total.bmp") == 0) return TB_SEP_FILL_TOTAL;
+    if (wcscmp(filename, L"sep_track_disabled.bmp") == 0) return TB_SEP_TRACK_DISABLED;
+    if (wcscmp(filename, L"sep_track_hover.bmp") == 0) return TB_SEP_TRACK_HOVER;
+    if (wcscmp(filename, L"sep_fill_current.bmp") == 0) return TB_SEP_FILL_CURRENT;
+    return -1;
+}
+
+static int ThemeBitmapResourceFallback(int themeIndex, const wchar_t* filename)
+{
+    int idx = ThemeBitmapSlotFromFile(filename);
+    if (idx < 0 || idx >= 16) return 0;
+    if (themeIndex < 0 || themeIndex >= kThemeCount)
+        themeIndex = 0;
+    return kThemeBitmapFallback[themeIndex][idx];
+}
+
 // ---- shaped-window helper --------------------------------------------------
 // Builds an HRGN covering all non-TRANS_COLOR pixels in hBmp.
 // Ownership is transferred to SetWindowRgn ??caller must NOT DeleteObject.
@@ -338,10 +413,10 @@ static void SetThemeDirectoryForIndex(int themeIndex)
 // Try to load a bitmap from the active theme folder on disk; fall back to the
 // embedded resource if the file is missing or the theme dir is not set.
 // The default theme (index 0 = 20100513_TW) is embedded in the exe ??no disk needed.
-static HBITMAP TryLoadThemeBitmap(const wchar_t* filename, int fallbackId)
+static HBITMAP TryLoadThemeBitmap(const wchar_t* filename, int fallbackId, int themeIndex)
 {
     // Non-default themes: try loading from disk first
-    if (g_main.themeDir[0]) {
+    if (themeIndex > 0 && g_main.themeDir[0]) {
         wchar_t path[MAX_PATH];
         wcscpy_s(path, g_main.themeDir);
         PathAppendW(path, filename);
@@ -349,8 +424,11 @@ static HBITMAP TryLoadThemeBitmap(const wchar_t* filename, int fallbackId)
             LoadImageW(nullptr, path, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE));
         if (h) return h;
     }
-    // Default theme or disk file missing: use embedded resource
-    return LoadBitmapRes(g_main.hInst, fallbackId);
+    // Fallback to embedded theme resources.
+    int rid = ThemeBitmapResourceFallback(themeIndex, filename);
+    if (rid == 0)
+        rid = fallbackId;
+    return LoadBitmapRes(g_main.hInst, rid);
 }
 
 static void ApplySepLayoutForTheme(int themeIndex)
@@ -533,22 +611,22 @@ static void ReloadThemeBitmaps(HWND hDlg)
     SetThemeDirectoryForIndex(tidx);
 
     // Reload bitmaps
-    g_main.hBgBitmap       = TryLoadThemeBitmap(L"main_bg.bmp",         IDB_MAIN_BG);
-    g_main.hCloseNormal    = TryLoadThemeBitmap(L"btn_close_normal.bmp",    IDB_BTN_CLOSE_NORMAL);
-    g_main.hCloseHover     = TryLoadThemeBitmap(L"btn_close_hover.bmp",     IDB_BTN_CLOSE_HOVER);
-    g_main.hClosePressed   = TryLoadThemeBitmap(L"btn_close_pressed.bmp",   IDB_BTN_CLOSE_PRESSED);
-    g_main.hOptionsNormal  = TryLoadThemeBitmap(L"btn_options_normal.bmp",  IDB_BTN_OPTIONS_NORMAL);
-    g_main.hOptionsHover   = TryLoadThemeBitmap(L"btn_options_hover.bmp",   IDB_BTN_OPTIONS_HOVER);
-    g_main.hOptionsPressed = TryLoadThemeBitmap(L"btn_options_pressed.bmp", IDB_BTN_OPTIONS_PRESSED);
-    g_main.hOptionsDisabled= TryLoadThemeBitmap(L"btn_options_disabled.bmp",IDB_BTN_OPTIONS_DISABLED);
-    g_main.hStartNormal    = TryLoadThemeBitmap(L"btn_start_normal.bmp",    IDB_BTN_START_NORMAL);
-    g_main.hStartHover     = TryLoadThemeBitmap(L"btn_start_hover.bmp",     IDB_BTN_START_HOVER);
-    g_main.hStartPressed   = TryLoadThemeBitmap(L"btn_start_pressed.bmp",   IDB_BTN_START_PRESSED);
-    g_main.hStartDisabled  = TryLoadThemeBitmap(L"btn_start_disabled.bmp",  IDB_BTN_START_DISABLED);
-    g_main.hSepFillTotal      = TryLoadThemeBitmap(L"sep_fill_total.bmp",          IDB_SEP_FILL_TOTAL);
-    g_main.hSepTrackDisabled    = TryLoadThemeBitmap(L"sep_track_disabled.bmp",        IDB_SEP_TRACK_DISABLED);
-    g_main.hSepTrackHover       = TryLoadThemeBitmap(L"sep_track_hover.bmp",           IDB_SEP_TRACK_HOVER);
-    g_main.hSepFillCurrent     = TryLoadThemeBitmap(L"sep_fill_current.bmp",         IDB_SEP_FILL_CURRENT);
+    g_main.hBgBitmap       = TryLoadThemeBitmap(L"main_bg.bmp",         IDB_MAIN_BG,            tidx);
+    g_main.hCloseNormal    = TryLoadThemeBitmap(L"btn_close_normal.bmp",    IDB_BTN_CLOSE_NORMAL,   tidx);
+    g_main.hCloseHover     = TryLoadThemeBitmap(L"btn_close_hover.bmp",     IDB_BTN_CLOSE_HOVER,    tidx);
+    g_main.hClosePressed   = TryLoadThemeBitmap(L"btn_close_pressed.bmp",   IDB_BTN_CLOSE_PRESSED,  tidx);
+    g_main.hOptionsNormal  = TryLoadThemeBitmap(L"btn_options_normal.bmp",  IDB_BTN_OPTIONS_NORMAL, tidx);
+    g_main.hOptionsHover   = TryLoadThemeBitmap(L"btn_options_hover.bmp",   IDB_BTN_OPTIONS_HOVER,  tidx);
+    g_main.hOptionsPressed = TryLoadThemeBitmap(L"btn_options_pressed.bmp", IDB_BTN_OPTIONS_PRESSED,tidx);
+    g_main.hOptionsDisabled= TryLoadThemeBitmap(L"btn_options_disabled.bmp",IDB_BTN_OPTIONS_DISABLED,tidx);
+    g_main.hStartNormal    = TryLoadThemeBitmap(L"btn_start_normal.bmp",    IDB_BTN_START_NORMAL,   tidx);
+    g_main.hStartHover     = TryLoadThemeBitmap(L"btn_start_hover.bmp",     IDB_BTN_START_HOVER,    tidx);
+    g_main.hStartPressed   = TryLoadThemeBitmap(L"btn_start_pressed.bmp",   IDB_BTN_START_PRESSED,  tidx);
+    g_main.hStartDisabled  = TryLoadThemeBitmap(L"btn_start_disabled.bmp",  IDB_BTN_START_DISABLED, tidx);
+    g_main.hSepFillTotal      = TryLoadThemeBitmap(L"sep_fill_total.bmp",          IDB_SEP_FILL_TOTAL,        tidx);
+    g_main.hSepTrackDisabled    = TryLoadThemeBitmap(L"sep_track_disabled.bmp",        IDB_SEP_TRACK_DISABLED,  tidx);
+    g_main.hSepTrackHover       = TryLoadThemeBitmap(L"sep_track_hover.bmp",           IDB_SEP_TRACK_HOVER,     tidx);
+    g_main.hSepFillCurrent     = TryLoadThemeBitmap(L"sep_fill_current.bmp",         IDB_SEP_FILL_CURRENT,    tidx);
     ApplyButtonLayoutForTheme(hDlg, tidx);
     ApplySepLayoutForTheme(tidx);
     RefreshSepBitmapMetrics();
@@ -602,22 +680,22 @@ static INT_PTR CALLBACK MainDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
         ApplyButtonLayoutForTheme(hDlg, tidx);
 
         // Load bitmaps (theme-aware; falls back to embedded resources)
-        g_main.hBgBitmap       = TryLoadThemeBitmap(L"main_bg.bmp",         IDB_MAIN_BG);
-        g_main.hCloseNormal    = TryLoadThemeBitmap(L"btn_close_normal.bmp",    IDB_BTN_CLOSE_NORMAL);
-        g_main.hCloseHover     = TryLoadThemeBitmap(L"btn_close_hover.bmp",     IDB_BTN_CLOSE_HOVER);
-        g_main.hClosePressed   = TryLoadThemeBitmap(L"btn_close_pressed.bmp",   IDB_BTN_CLOSE_PRESSED);
-        g_main.hOptionsNormal  = TryLoadThemeBitmap(L"btn_options_normal.bmp",  IDB_BTN_OPTIONS_NORMAL);
-        g_main.hOptionsHover   = TryLoadThemeBitmap(L"btn_options_hover.bmp",   IDB_BTN_OPTIONS_HOVER);
-        g_main.hOptionsPressed = TryLoadThemeBitmap(L"btn_options_pressed.bmp", IDB_BTN_OPTIONS_PRESSED);
-        g_main.hOptionsDisabled= TryLoadThemeBitmap(L"btn_options_disabled.bmp",IDB_BTN_OPTIONS_DISABLED);
-        g_main.hStartNormal    = TryLoadThemeBitmap(L"btn_start_normal.bmp",    IDB_BTN_START_NORMAL);
-        g_main.hStartHover     = TryLoadThemeBitmap(L"btn_start_hover.bmp",     IDB_BTN_START_HOVER);
-        g_main.hStartPressed   = TryLoadThemeBitmap(L"btn_start_pressed.bmp",   IDB_BTN_START_PRESSED);
-        g_main.hStartDisabled  = TryLoadThemeBitmap(L"btn_start_disabled.bmp",  IDB_BTN_START_DISABLED);
-        g_main.hSepFillTotal      = TryLoadThemeBitmap(L"sep_fill_total.bmp",          IDB_SEP_FILL_TOTAL);
-        g_main.hSepTrackDisabled    = TryLoadThemeBitmap(L"sep_track_disabled.bmp",        IDB_SEP_TRACK_DISABLED);
-        g_main.hSepTrackHover       = TryLoadThemeBitmap(L"sep_track_hover.bmp",           IDB_SEP_TRACK_HOVER);
-        g_main.hSepFillCurrent     = TryLoadThemeBitmap(L"sep_fill_current.bmp",         IDB_SEP_FILL_CURRENT);
+        g_main.hBgBitmap       = TryLoadThemeBitmap(L"main_bg.bmp",         IDB_MAIN_BG,            tidx);
+        g_main.hCloseNormal    = TryLoadThemeBitmap(L"btn_close_normal.bmp",    IDB_BTN_CLOSE_NORMAL,   tidx);
+        g_main.hCloseHover     = TryLoadThemeBitmap(L"btn_close_hover.bmp",     IDB_BTN_CLOSE_HOVER,    tidx);
+        g_main.hClosePressed   = TryLoadThemeBitmap(L"btn_close_pressed.bmp",   IDB_BTN_CLOSE_PRESSED,  tidx);
+        g_main.hOptionsNormal  = TryLoadThemeBitmap(L"btn_options_normal.bmp",  IDB_BTN_OPTIONS_NORMAL, tidx);
+        g_main.hOptionsHover   = TryLoadThemeBitmap(L"btn_options_hover.bmp",   IDB_BTN_OPTIONS_HOVER,  tidx);
+        g_main.hOptionsPressed = TryLoadThemeBitmap(L"btn_options_pressed.bmp", IDB_BTN_OPTIONS_PRESSED,tidx);
+        g_main.hOptionsDisabled= TryLoadThemeBitmap(L"btn_options_disabled.bmp",IDB_BTN_OPTIONS_DISABLED,tidx);
+        g_main.hStartNormal    = TryLoadThemeBitmap(L"btn_start_normal.bmp",    IDB_BTN_START_NORMAL,   tidx);
+        g_main.hStartHover     = TryLoadThemeBitmap(L"btn_start_hover.bmp",     IDB_BTN_START_HOVER,    tidx);
+        g_main.hStartPressed   = TryLoadThemeBitmap(L"btn_start_pressed.bmp",   IDB_BTN_START_PRESSED,  tidx);
+        g_main.hStartDisabled  = TryLoadThemeBitmap(L"btn_start_disabled.bmp",  IDB_BTN_START_DISABLED, tidx);
+        g_main.hSepFillTotal      = TryLoadThemeBitmap(L"sep_fill_total.bmp",          IDB_SEP_FILL_TOTAL,        tidx);
+        g_main.hSepTrackDisabled    = TryLoadThemeBitmap(L"sep_track_disabled.bmp",        IDB_SEP_TRACK_DISABLED,  tidx);
+        g_main.hSepTrackHover       = TryLoadThemeBitmap(L"sep_track_hover.bmp",           IDB_SEP_TRACK_HOVER,     tidx);
+        g_main.hSepFillCurrent     = TryLoadThemeBitmap(L"sep_fill_current.bmp",         IDB_SEP_FILL_CURRENT,    tidx);
         ApplySepLayoutForTheme(tidx);
         RefreshSepBitmapMetrics();
 

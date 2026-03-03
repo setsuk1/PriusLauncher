@@ -36,6 +36,42 @@ IDB_SEP_TRACK_DISABLED   BITMAP  "assets\\themes\\20100513_TW\\sep_track_disable
 IDB_SEP_TRACK_HOVER      BITMAP  "assets\\themes\\20100513_TW\\sep_track_hover.bmp"
 IDB_SEP_FILL_CURRENT     BITMAP  "assets\\themes\\20100513_TW\\sep_fill_current.bmp"
 
+// Built-in theme: 20101110_TW
+IDB_MAIN_BG_20101110                BITMAP  "assets\\themes\\20101110_TW\\main_bg.bmp"
+IDB_BTN_CLOSE_NORMAL_20101110       BITMAP  "assets\\themes\\20101110_TW\\btn_close_normal.bmp"
+IDB_BTN_CLOSE_HOVER_20101110        BITMAP  "assets\\themes\\20101110_TW\\btn_close_hover.bmp"
+IDB_BTN_CLOSE_PRESSED_20101110      BITMAP  "assets\\themes\\20101110_TW\\btn_close_pressed.bmp"
+IDB_BTN_OPTIONS_NORMAL_20101110     BITMAP  "assets\\themes\\20101110_TW\\btn_options_normal.bmp"
+IDB_BTN_OPTIONS_HOVER_20101110      BITMAP  "assets\\themes\\20101110_TW\\btn_options_hover.bmp"
+IDB_BTN_OPTIONS_PRESSED_20101110    BITMAP  "assets\\themes\\20101110_TW\\btn_options_pressed.bmp"
+IDB_BTN_OPTIONS_DISABLED_20101110   BITMAP  "assets\\themes\\20101110_TW\\btn_options_disabled.bmp"
+IDB_BTN_START_NORMAL_20101110       BITMAP  "assets\\themes\\20101110_TW\\btn_start_normal.bmp"
+IDB_BTN_START_HOVER_20101110        BITMAP  "assets\\themes\\20101110_TW\\btn_start_hover.bmp"
+IDB_BTN_START_PRESSED_20101110      BITMAP  "assets\\themes\\20101110_TW\\btn_start_pressed.bmp"
+IDB_BTN_START_DISABLED_20101110     BITMAP  "assets\\themes\\20101110_TW\\btn_start_disabled.bmp"
+IDB_SEP_FILL_TOTAL_20101110         BITMAP  "assets\\themes\\20101110_TW\\sep_fill_total.bmp"
+IDB_SEP_TRACK_DISABLED_20101110     BITMAP  "assets\\themes\\20101110_TW\\sep_track_disabled.bmp"
+IDB_SEP_TRACK_HOVER_20101110        BITMAP  "assets\\themes\\20101110_TW\\sep_track_hover.bmp"
+IDB_SEP_FILL_CURRENT_20101110       BITMAP  "assets\\themes\\20101110_TW\\sep_fill_current.bmp"
+
+// Built-in theme: 20100420_US
+IDB_MAIN_BG_20100420                BITMAP  "assets\\themes\\20100420_US\\main_bg.bmp"
+IDB_BTN_CLOSE_NORMAL_20100420       BITMAP  "assets\\themes\\20100420_US\\btn_close_normal.bmp"
+IDB_BTN_CLOSE_HOVER_20100420        BITMAP  "assets\\themes\\20100420_US\\btn_close_hover.bmp"
+IDB_BTN_CLOSE_PRESSED_20100420      BITMAP  "assets\\themes\\20100420_US\\btn_close_pressed.bmp"
+IDB_BTN_OPTIONS_NORMAL_20100420     BITMAP  "assets\\themes\\20100420_US\\btn_options_normal.bmp"
+IDB_BTN_OPTIONS_HOVER_20100420      BITMAP  "assets\\themes\\20100420_US\\btn_options_hover.bmp"
+IDB_BTN_OPTIONS_PRESSED_20100420    BITMAP  "assets\\themes\\20100420_US\\btn_options_pressed.bmp"
+IDB_BTN_OPTIONS_DISABLED_20100420   BITMAP  "assets\\themes\\20100420_US\\btn_options_disabled.bmp"
+IDB_BTN_START_NORMAL_20100420       BITMAP  "assets\\themes\\20100420_US\\btn_start_normal.bmp"
+IDB_BTN_START_HOVER_20100420        BITMAP  "assets\\themes\\20100420_US\\btn_start_hover.bmp"
+IDB_BTN_START_PRESSED_20100420      BITMAP  "assets\\themes\\20100420_US\\btn_start_pressed.bmp"
+IDB_BTN_START_DISABLED_20100420     BITMAP  "assets\\themes\\20100420_US\\btn_start_disabled.bmp"
+IDB_SEP_FILL_TOTAL_20100420         BITMAP  "assets\\themes\\20100420_US\\sep_fill_total.bmp"
+IDB_SEP_TRACK_DISABLED_20100420     BITMAP  "assets\\themes\\20100420_US\\sep_track_disabled.bmp"
+IDB_SEP_TRACK_HOVER_20100420        BITMAP  "assets\\themes\\20100420_US\\sep_track_hover.bmp"
+IDB_SEP_FILL_CURRENT_20100420       BITMAP  "assets\\themes\\20100420_US\\sep_fill_current.bmp"
+
 // --------------------------------------------------------------------
 //  Main launcher dialog  (IDD_MAIN = 101)
 //  Actual pixel size (825x510) is forced in WM_INITDIALOG.
